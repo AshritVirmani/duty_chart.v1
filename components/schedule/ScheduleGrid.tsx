@@ -34,7 +34,7 @@ export function ScheduleGrid({
           <tr>
             <th
               rowSpan={3}
-              className="border border-black p-1 md:p-2 text-center min-w-[70px] md:min-w-[90px] sticky left-0 z-30 bg-slate-100 font-bold text-gray-700 text-xs md:text-base align-middle print:static print:bg-white print:min-w-0 print:w-[8%]"
+              className="border border-black p-1 md:p-2 text-center w-[70px] min-w-[70px] max-w-[70px] md:w-[90px] md:min-w-[90px] md:max-w-[90px] sticky left-0 z-30 bg-slate-100 font-bold text-gray-700 text-xs md:text-base align-middle print:static print:bg-white print:min-w-0 print:w-[8%]"
             >
               <div className="flex flex-col gap-0.5 md:gap-1">
                 <span className="whitespace-pre-line">{t.grid.day_date}</span>
@@ -42,7 +42,7 @@ export function ScheduleGrid({
             </th>
             <th
               rowSpan={3}
-              className="border border-black p-1 md:p-2 text-center min-w-[70px] md:min-w-[90px] sticky left-[70px] md:left-[90px] z-30 bg-slate-100 font-bold text-gray-700 text-sm md:text-lg align-middle print:static print:bg-white print:min-w-0 print:w-[8%]"
+              className="border border-black p-1 md:p-2 text-center min-w-[70px] md:min-w-[90px] md:sticky md:left-[90px] z-30 bg-slate-100 font-bold text-gray-700 text-sm md:text-lg align-middle print:static print:bg-white print:min-w-0 print:w-[8%]"
             >
               {t.grid.service}
             </th>
@@ -125,7 +125,7 @@ export function ScheduleGrid({
                     </td>
                   )}
 
-                  <td className="border border-black p-2 md:p-3 font-semibold text-gray-700 align-middle sticky left-[70px] md:left-[90px] z-10 bg-inherit text-center text-sm md:text-base print:static print:text-base print:p-2">
+                  <td className="border border-black p-2 md:p-3 font-semibold text-gray-700 align-middle md:sticky md:left-[90px] z-10 bg-inherit text-center text-sm md:text-base print:static print:text-base print:p-2">
                     <span className="print:whitespace-normal print:break-words">
                       {service.type === "Stage Seva" || service.type === "स्टेज सेवा" ? t.services.stage_seva : 
                        service.type === "Sanchalan" || service.type === "संचालन" ? t.services.sanchalan : service.type}
