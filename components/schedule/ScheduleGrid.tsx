@@ -29,27 +29,27 @@ export function ScheduleGrid({
 
   return (
     <div className="flex-1 overflow-auto border border-black rounded-lg shadow-lg bg-white relative print:border-none print:shadow-none print:overflow-visible" id="schedule-grid">
-      <table className="w-full border-collapse min-w-max md:min-w-0 print:min-w-0 print:w-full print:table-fixed print:h-full">
+      <table className="w-full border-collapse table-fixed md:table-auto print:min-w-0 print:w-full print:table-fixed print:h-full">
         <thead className="bg-slate-100 sticky top-0 z-20 shadow-sm print:static print:bg-white print:shadow-none">
           <tr>
             <th
               rowSpan={3}
-              className="border border-black p-1 md:p-2 text-center w-[70px] min-w-[70px] max-w-[70px] md:w-[90px] md:min-w-[90px] md:max-w-[90px] sticky left-0 z-30 bg-slate-100 font-bold text-gray-700 text-xs md:text-base align-middle print:static print:bg-white print:min-w-0 print:w-[8%]"
+              className="border border-black p-0.5 md:p-2 text-center w-[50px] md:w-[90px] md:min-w-[90px] md:max-w-[90px] sticky left-0 z-30 bg-slate-100 font-bold text-gray-700 text-[10px] md:text-base align-middle print:static print:bg-white print:min-w-0 print:w-[8%]"
             >
-              <div className="flex flex-col gap-0.5 md:gap-1">
-                <span className="whitespace-pre-line">{t.grid.day_date}</span>
+              <div className="flex flex-col gap-0 md:gap-1">
+                <span className="whitespace-pre-line leading-tight">{t.grid.day_date}</span>
               </div>
             </th>
             <th
               rowSpan={3}
-              className="border border-black p-1 md:p-2 text-center min-w-[70px] md:min-w-[90px] md:sticky md:left-[90px] z-30 bg-slate-100 font-bold text-gray-700 text-sm md:text-lg align-middle print:static print:bg-white print:min-w-0 print:w-[8%]"
+              className="border border-black p-0.5 md:p-2 text-center w-[45px] md:min-w-[90px] md:sticky md:left-[90px] z-30 bg-slate-100 font-bold text-gray-700 text-[10px] md:text-lg align-middle print:static print:bg-white print:min-w-0 print:w-[8%]"
             >
               {t.grid.service}
             </th>
             {zones.map((zone, index) => (
               <th
                 key={`num-${zone.id}`}
-                className="border border-black p-1 text-center font-bold text-gray-800 text-xs md:text-base print:text-sm"
+                className="border border-black p-0.5 md:p-1 text-center font-bold text-gray-800 text-[9px] md:text-base print:text-sm"
               >
                 {index + 1}
               </th>
@@ -60,20 +60,20 @@ export function ScheduleGrid({
             {zones.map((zone, index) => (
               <th
                 key={`name-${zone.id}`}
-                className="border border-black p-1 md:p-1.5 text-center min-w-[110px] md:min-w-0 font-semibold text-gray-700 align-top group relative print:min-w-0 print:align-middle"
+                className="border border-black p-0.5 md:p-1.5 text-center font-semibold text-gray-700 align-top group relative print:min-w-0 print:align-middle"
               >
                 <div className="print:hidden">
                   <input
                     type="text"
                     value={zone.name}
                     onChange={(e) => onZoneUpdate(index, "name", e.target.value)}
-                    className="w-full text-center bg-transparent font-bold text-gray-900 mb-0.5 border-b border-transparent hover:border-gray-400 focus:border-blue-500 focus:outline-none text-sm md:text-base whitespace-normal"
+                    className="w-full text-center bg-transparent font-bold text-gray-900 mb-0 border-b border-transparent hover:border-gray-400 focus:border-blue-500 focus:outline-none text-[9px] md:text-base whitespace-normal leading-tight"
                   />
                   <input
                     type="text"
                     value={zone.contact}
                     onChange={(e) => onZoneUpdate(index, "contact", e.target.value)}
-                    className="w-full text-center bg-transparent text-xs md:text-sm text-gray-600 font-normal border-b border-transparent hover:border-gray-400 focus:border-blue-500 focus:outline-none"
+                    className="w-full text-center bg-transparent text-[8px] md:text-sm text-gray-600 font-normal border-b border-transparent hover:border-gray-400 focus:border-blue-500 focus:outline-none leading-tight"
                   />
                 </div>
                 
@@ -89,13 +89,13 @@ export function ScheduleGrid({
             {zones.map((zone, index) => (
               <th
                 key={`time-${zone.id}`}
-                className="border border-black p-1 md:p-1.5 text-center text-xs md:text-sm font-medium text-gray-800 print:text-xs"
+                className="border border-black p-0.5 md:p-1.5 text-center text-[9px] md:text-sm font-medium text-gray-800 print:text-xs"
               >
                  <input
                   type="text"
                   value={zone.time}
                   onChange={(e) => onZoneUpdate(index, "time", e.target.value)}
-                  className="w-full text-center bg-transparent font-medium border-b border-transparent hover:border-gray-400 focus:border-blue-500 focus:outline-none print:hidden text-xs md:text-sm"
+                  className="w-full text-center bg-transparent font-medium border-b border-transparent hover:border-gray-400 focus:border-blue-500 focus:outline-none print:hidden text-[9px] md:text-sm"
                 />
                 <span className="hidden print:block text-xs font-medium whitespace-nowrap">{zone.time}</span>
               </th>
@@ -116,17 +116,17 @@ export function ScheduleGrid({
                   {serviceIndex === 0 && (
                     <td
                       rowSpan={dayData.services.length}
-                      className="border border-black p-2 md:p-3 font-bold text-gray-700 align-middle sticky left-0 z-10 bg-white text-center print:static print:p-2"
+                      className="border border-black p-0.5 md:p-3 font-bold text-gray-700 align-middle sticky left-0 z-10 bg-white text-center print:static print:p-2"
                     >
-                      <div className="flex flex-col gap-0.5 md:gap-1">
-                        <span className="text-xs md:text-base text-gray-900 print:text-base">{dayData.day}</span>
-                        <span className="text-[10px] md:text-sm text-gray-500 font-medium print:text-sm whitespace-nowrap">{dayData.date}</span>
+                      <div className="flex flex-col gap-0 md:gap-1">
+                        <span className="text-[10px] md:text-base text-gray-900 print:text-base leading-tight">{dayData.day}</span>
+                        <span className="text-[8px] md:text-sm text-gray-500 font-medium print:text-sm whitespace-nowrap leading-tight">{dayData.date}</span>
                       </div>
                     </td>
                   )}
 
-                  <td className="border border-black p-2 md:p-3 font-semibold text-gray-700 align-middle md:sticky md:left-[90px] z-10 bg-inherit text-center text-sm md:text-base print:static print:text-base print:p-2">
-                    <span className="print:whitespace-normal print:break-words">
+                  <td className="border border-black p-0.5 md:p-3 font-semibold text-gray-700 align-middle md:sticky md:left-[90px] z-10 bg-inherit text-center text-[9px] md:text-base print:static print:text-base print:p-2">
+                    <span className="print:whitespace-normal print:break-words leading-tight">
                       {service.type === "Stage Seva" || service.type === "स्टेज सेवा" ? t.services.stage_seva : 
                        service.type === "Sanchalan" || service.type === "संचालन" ? t.services.sanchalan : service.type}
                     </span>
@@ -138,12 +138,12 @@ export function ScheduleGrid({
                     return (
                       <td
                         key={zone.id}
-                        className="border border-black p-0.5 md:p-1 text-center align-middle"
+                        className="border border-black p-0 md:p-1 text-center align-middle"
                       >
                          <div className="relative w-full h-full flex items-center justify-center">
                            <input
                              list={`volunteers-${dayIndex}-${serviceIndex}-${zone.id}`}
-                             className="w-full h-8 px-1 md:px-2 py-0.5 text-sm md:text-base text-center bg-transparent border-transparent hover:border-slate-300 focus:border-blue-500 focus:outline-none rounded-sm font-medium text-gray-800 print:hidden whitespace-normal overflow-hidden text-ellipsis"
+                             className="w-full h-6 md:h-8 px-0.5 md:px-2 py-0 text-[9px] md:text-base text-center bg-transparent border-transparent hover:border-slate-300 focus:border-blue-500 focus:outline-none rounded-sm font-medium text-gray-800 print:hidden whitespace-normal overflow-hidden text-ellipsis leading-tight"
                              value={currentValue || ""}
                              onChange={(e) => onCellChange(dayIndex, serviceIndex, zone.id, e.target.value)}
                            />
