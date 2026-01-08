@@ -52,9 +52,9 @@ export function ScheduleManager() {
   // Dynamic Document Title for PDF Naming
   useEffect(() => {
     const endOfWeek = addDays(currentWeekStart, 5);
-    const startStr = format(currentWeekStart, "dd.MM.yyyy");
-    const endStr = format(endOfWeek, "dd.MM.yyyy");
-    document.title = `Duty Chart ${startStr} - ${endStr}`;
+    const startStr = format(currentWeekStart, "dd-MM-yyyy");
+    const endStr = format(endOfWeek, "dd-MM-yyyy");
+    document.title = `Duty Chart from ${startStr} to ${endStr}`;
   }, [currentWeekStart]);
 
   // Initialize and Update Editable Text on Language Change
