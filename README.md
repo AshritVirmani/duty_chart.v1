@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Weekly Volunteer Deployment Schedule Dashboard
 
-## Getting Started
+A comprehensive, interactive, and printable dashboard for managing weekly volunteer deployments across multiple zones. This application replaces manual PDF rosters with a dynamic, easy-to-update web interface.
 
-First, run the development server:
+## 🌟 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+*   **Dynamic Schedule Grid:** View and manage assignments for 11 zones over a 6-day week (Mon-Sat).
+*   **Volunteer Management:**
+    *   Maintain a master list of volunteers for "Stage Seva" and "Sanchalan" roles.
+    *   Separate management for "Gyan Pracharaks".
+    *   Smart prevention of assigning the same volunteer to the same zone more than once a month.
+*   **Automatic Randomization:**
+    *   Intelligently shuffle and assign volunteers to slots.
+    *   Respects role separation (Stage vs. Sanchalan).
+    *   Checks availability and constraints.
+*   **Multi-Language Support:**
+    *   Full interface translation for English, Hindi, Punjabi, Marathi, and Garhwali.
+    *   Zone names, days, and volunteer names are transliterated.
+*   **Print-Ready PDF Export:**
+    *   One-click "Export PDF" button.
+    *   Optimized layout for landscape printing on a single sheet.
+    *   High-contrast, legible typography for physical distribution.
+*   **Local Data Persistence:**
+    *   All data (volunteers, schedules, settings) is saved to your browser's Local Storage.
+    *   No external database required; data persists across sessions.
+*   **Full Editability:**
+    *   Edit header quotes, titles, and footer requests directly on the page.
+    *   Modify zone names and contact numbers.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Getting Started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+*   Node.js (v18 or newer)
+*   npm
 
-## Learn More
+### Installation
 
-To learn more about Next.js, take a look at the following resources:
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/AshritVirmani/duty-chart.git
+    cd duty-chart
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3.  Run the development server:
+    ```bash
+    npm run dev
+    ```
 
-## Deploy on Vercel
+4.  Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📖 How to Use
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 1. Master Controls
+*   **Week Navigation:** Use the arrows `<` `>` or the calendar icon to select the week you want to schedule.
+*   **Language:** Select your preferred language from the dropdown.
+*   **Manage Roster:** Click "Team Management" to add or remove volunteers from the lists (Stage, Sanchalan, Gyan Pracharak).
+
+### 2. Creating a Schedule
+*   **Manual Entry:** Click any cell in the grid to select a volunteer from the dropdown list.
+*   **Randomize:** Use "Randomize Stage" or "Randomize Sanchalan" to automatically fill empty slots. The system will warn you if a volunteer is being assigned to the same zone twice in a month.
+*   **Editing Zones:** Click on any zone name, contact number, or time in the header to edit it.
+*   **Editing Header/Footer:** Click on the top quote, main title, or footer bullet points to customize the text.
+
+### 3. Saving & Printing
+*   **Save:** Click the "Save" button to persist your changes for the current week.
+*   **Export PDF:** Click "Export PDF" to open the print dialog. Ensure your printer settings are set to **Landscape** and **Background Graphics** is enabled if needed (though the design is optimized for B&W).
+
+## 🛠️ Technical Details
+
+*   **Framework:** Next.js 15 (App Router)
+*   **Styling:** Tailwind CSS
+*   **UI Components:** ShadCN UI (Radix Primitives)
+*   **State Management:** React Hooks + Local Storage
+*   **Deployment:** Configured for GitHub Pages
+
+## 📱 Mobile Access
+
+This dashboard is deployed to GitHub Pages and is responsive. You can access it on your mobile device to view schedules, though a desktop/tablet is recommended for editing.
+
+---
+*Built for efficient Seva management.*
