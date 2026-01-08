@@ -143,19 +143,22 @@
   #control-panel, 
   .no-print,
   button,
-  #schedule-grid-mobile,
-  [id="schedule-grid-mobile"] {
+  #schedule-grid-mobile {
     display: none !important;
   }
 
   /* Force desktop table to show in print mode (even on mobile) */
-  /* Override Tailwind's hidden class specifically for schedule-grid in print */
+  /* Override Tailwind's hidden class for print */
   #schedule-grid.hidden,
+  #schedule-grid[class*="hidden"] {
+    display: block !important;
+  }
+  
   #schedule-grid {
     display: block !important;
     flex-grow: 1 !important;
     border: 1px solid black !important;
-    overflow: hidden !important; /* No scrolling in print */
+    overflow: hidden !important;
     width: 100% !important;
     height: auto !important;
   }
