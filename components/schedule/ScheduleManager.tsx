@@ -459,7 +459,45 @@ export function ScheduleManager() {
   }, []);
 
   const handleExport = useCallback(() => {
+    // Replace inputs with their values for print (especially important for mobile Safari)
+    const printableDashboard = document.getElementById('printable-dashboard');
+    if (!printableDashboard) {
+      window.print();
+      return;
+    }
+
+    const inputs = printableDashboard.querySelectorAll('input');
+    const replacements: Array<{ input: HTMLInputElement; span: HTMLSpanElement; parent: Node | null }> = [];
+
+    inputs.forEach(input => {
+      const span = document.createElement('span');
+      span.textContent = input.value || '';
+      const computedStyle = getComputedStyle(input);
+      span.style.fontWeight = computedStyle.fontWeight;
+      span.style.fontSize = computedStyle.fontSize;
+      span.style.fontStyle = computedStyle.fontStyle;
+      span.style.textAlign = computedStyle.textAlign;
+      span.style.display = 'inline';
+      span.className = input.className.replace(/print:hidden/g, '').replace(/hidden/g, '');
+      
+      const parent = input.parentNode;
+      if (parent) {
+        parent.replaceChild(span, input);
+        replacements.push({ input, span, parent });
+      }
+    });
+
+    // Trigger print
     window.print();
+
+    // Restore inputs after a short delay (after print dialog closes)
+    setTimeout(() => {
+      replacements.forEach(({ input, span, parent }) => {
+        if (parent && span.parentNode === parent) {
+          parent.replaceChild(input, span);
+        }
+      });
+    }, 500);
   }, []);
 
   const handleExportWord = useCallback(() => {

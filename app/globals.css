@@ -148,19 +148,32 @@
   }
 
   /* Force desktop table to show in print mode (even on mobile) */
-  /* Override Tailwind's hidden class for print */
+  /* Override Tailwind's hidden class for print - must be very specific for iOS Safari */
+  * {
+    /* Reset any display: none on schedule-grid */
+  }
+  
   #schedule-grid.hidden,
-  #schedule-grid[class*="hidden"] {
+  #schedule-grid[class*="hidden"],
+  #schedule-grid[class~="hidden"],
+  div#schedule-grid.hidden,
+  div#schedule-grid {
     display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
   
   #schedule-grid {
     display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     flex-grow: 1 !important;
     border: 1px solid black !important;
     overflow: hidden !important;
     width: 100% !important;
     height: auto !important;
+    position: relative !important;
+    max-width: 100% !important;
   }
 
   /* Ensure the grid takes full width and height */
@@ -192,12 +205,71 @@
     border-collapse: collapse !important;
   }
 
+  /* Hide all inputs and show their values in print */
+  input {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Show print-specific spans that contain the values */
+  /* Handle Tailwind print: classes */
+  [class*="print:block"],
+  [class*="print:flex"],
+  [class*="print\\:block"],
+  [class*="print\\:flex"] {
+    display: block !important;
+    visibility: visible !important;
+  }
+  
+  /* Specifically show spans with print:flex */
+  span[class*="print:flex"],
+  span[class*="print\\:flex"] {
+    display: flex !important;
+    visibility: visible !important;
+  }
+  
+  /* Show hidden elements that have print: classes */
+  .hidden[class*="print:block"],
+  .hidden[class*="print:flex"],
+  .hidden[class*="print\\:block"],
+  .hidden[class*="print\\:flex"] {
+    display: block !important;
+    visibility: visible !important;
+  }
+  
+  /* Ensure datalist is hidden */
+  datalist {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Ensure cells display their content properly */
+  td > div,
+  th > div {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* Show spans inside cells */
+  td span,
+  th span {
+    display: inline !important;
+    visibility: visible !important;
+  }
+
   /* Typography tweaks for print */
   th, td {
     border: 1px solid black !important;
     padding: 2px 4px !important;
     white-space: normal !important;
     word-break: break-word !important;
+  }
+  
+  /* Ensure cells show text content */
+  td span,
+  th span {
+    display: inline !important;
   }
   
   h1 {

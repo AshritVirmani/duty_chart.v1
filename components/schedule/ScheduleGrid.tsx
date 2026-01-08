@@ -167,7 +167,7 @@ export function ScheduleGrid({
       </div>
 
       {/* Desktop Table Layout - Hidden on mobile, visible on desktop and print */}
-      <div className="hidden md:block flex-1 overflow-auto border border-black rounded-lg shadow-lg bg-white relative print:border-none print:shadow-none print:overflow-visible print:block print:!block" id="schedule-grid">
+      <div className="hidden md:block flex-1 overflow-auto border border-black rounded-lg shadow-lg bg-white relative print:border-none print:shadow-none print:overflow-visible" id="schedule-grid">
         <table className="w-full border-collapse table-auto print:min-w-0 print:w-full print:table-fixed print:h-full">
         <thead className="bg-slate-100 sticky top-0 z-20 shadow-sm print:static print:bg-white print:shadow-none">
           <tr>
