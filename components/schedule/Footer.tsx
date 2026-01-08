@@ -21,14 +21,15 @@ export function Footer({
         - Col 1: The Label "Vishesh Binti -" (Auto width)
         - Col 2: The List of Requests (Takes remaining space)
       */}
-      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-2 md:gap-6 print:grid-cols-[auto_1fr] print:gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-2 md:gap-6 print:grid-cols-[auto_1fr] print:gap-2">
 
         {/* Left Column: Label */}
         <div className="font-bold text-sm md:text-base whitespace-nowrap print:text-xs print:font-bold mt-1">
           <input
             value={title}
             onChange={(e) => onTitleUpdate(e.target.value)}
-            className="bg-transparent border-none focus:outline-none font-bold text-gray-900 w-full md:w-auto"
+            className="bg-transparent border-none focus:outline-none font-bold text-gray-900 w-full md:w-auto print:w-auto"
+            style={{ width: `${Math.max(title.length, 10)}ch` }} // Dynamic width to keep label compact
           />
         </div>
 
