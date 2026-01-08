@@ -475,7 +475,7 @@ export function ScheduleManager() {
         />
       </div>
 
-      <div id="printable-dashboard" className="flex flex-col gap-2 md:gap-4 bg-white p-2 md:p-4 rounded-lg shadow-sm border border-slate-200 print:shadow-none print:border-none print:p-2 print:gap-0 print:m-0 print:min-w-[1024px]">
+      <div id="printable-dashboard" className="flex flex-col gap-2 md:gap-4 bg-white p-2 md:p-4 rounded-lg shadow-sm border border-slate-200 print:shadow-none print:border-none print:p-0 print:gap-0 print:m-0 print:min-w-[1024px] print:scale-[0.98] print:origin-top">
         <header className="text-center mb-1 md:mb-4 flex-shrink-0 print:mb-0">
           <h2 className="text-sm md:text-xl font-semibold text-gray-800 mb-1 md:mb-2 italic print:text-sm print:mb-0">
             <input
