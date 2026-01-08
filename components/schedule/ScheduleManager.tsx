@@ -18,7 +18,7 @@ const getInitialHardcoded = (role: VolunteerRole) =>
     .sort();
 
 export function ScheduleManager() {
-  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(new Date(2025, 2, 31));
+  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(new Date(2026, 0, 12));
   const [scheduleData, setScheduleData] = useState<DaySchedule[]>([]);
   const [isDirty, setIsDirty] = useState(false);
   const [scheduleStore, setScheduleStore] = useState<Record<string, DaySchedule[]>>({});
@@ -109,8 +109,8 @@ export function ScheduleManager() {
           setScheduleStore(parsedSchedules);
         } else {
           // Initialize with default hardcoded week if no store
-          const initialId = generateWeekId(new Date(2025, 2, 31));
-          const initialData = getScheduleForWeek(new Date(2025, 2, 31));
+          const initialId = generateWeekId(new Date(2026, 0, 12));
+          const initialData = getScheduleForWeek(new Date(2026, 0, 12));
           setScheduleStore({ [initialId]: initialData });
         }
 
@@ -418,8 +418,21 @@ export function ScheduleManager() {
   }, []);
 
   const handleExport = useCallback(() => {
+    const endOfWeek = addDays(currentWeekStart, 5);
+    const startStr = format(currentWeekStart, "dd-MM-yyyy");
+    const endStr = format(endOfWeek, "dd-MM-yyyy");
+
+    // Save original title
+    const originalTitle = document.title;
+
+    // Set temp title for PDF filename
+    document.title = `Duty_Chart_${startStr}_to_${endStr}`;
+
     window.print();
-  }, []);
+
+    // Restore title (optional, but good practice)
+    document.title = originalTitle;
+  }, [currentWeekStart]);
 
   const t = translations[currentLang];
 
