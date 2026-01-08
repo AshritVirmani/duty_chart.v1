@@ -426,8 +426,18 @@ export function ScheduleManager() {
   }, []);
 
   const handleExport = useCallback(() => {
-    window.print();
-  }, []);
+    // Force set title right before printing to ensure correct filename
+    const endOfWeek = addDays(currentWeekStart, 5);
+    const startStr = format(currentWeekStart, "dd-MM-yyyy");
+    const endStr = format(endOfWeek, "dd-MM-yyyy");
+    const newTitle = `Duty Chart from ${startStr} to ${endStr}`;
+    document.title = newTitle;
+
+    // Small timeout to ensure title update propagates before print dialog
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  }, [currentWeekStart]);
 
   const t = translations[currentLang];
 
