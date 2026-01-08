@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { DaySchedule, Zone } from "@/lib/types";
 import { Language, translations } from "@/lib/translations";
@@ -27,58 +27,108 @@ export function ScheduleGrid({
 
     const t = translations[currentLang];
 
+    // NEW: State to track which day is currently selected on Mobile
+    const [activeMobileDayIndex, setActiveMobileDayIndex] = useState(0);
+
+    // Helper to get the currently viewed day data
+    const activeDayData = data[activeMobileDayIndex];
+
     return (
         <>
-            {/* Mobile Card Layout */}
-            <div className="md:hidden w-full overflow-y-auto border border-gray-300 rounded-lg shadow-sm bg-white print:hidden" id="schedule-grid-mobile">
-                <div className="p-2 space-y-3">
-                    {data.map((dayData, dayIndex) => (
-                        <div key={`mobile-${dayData.date}-${dayIndex}`} className="border border-gray-300 rounded-lg bg-white">
-                            <div className="bg-slate-100 p-2 border-b border-gray-300">
-                                <div className="font-bold text-sm text-gray-900">{dayData.day}</div>
-                                <div className="text-xs text-gray-600">{dayData.date}</div>
+            {/* ========================================================= */}
+            {/* MOBILE LAYOUT (Tabs + Single Day View)                    */}
+            {/* ========================================================= */}
+            <div className="md:hidden w-full bg-white print:hidden" id="schedule-grid-mobile">
+
+                {/* 1. Horizontal Date Tabs (Sticky Top) */}
+                <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm p-2 mb-2">
+                    <div className="flex overflow-x-auto gap-2 pb-1 no-scrollbar" style={{ scrollbarWidth: 'none' }}>
+                        {data.map((dayData, index) => (
+                            <button
+                                key={`tab-${index}`}
+                                onClick={() => setActiveMobileDayIndex(index)}
+                                className={cn(
+                                    "flex flex-col items-center justify-center min-w-[70px] px-3 py-2 rounded-lg border transition-all duration-200",
+                                    activeMobileDayIndex === index
+                                        ? "bg-blue-600 border-blue-600 text-white shadow-md"
+                                        : "bg-slate-50 border-gray-200 text-gray-600 hover:bg-slate-100"
+                                )}
+                            >
+                                <span className="text-xs font-bold uppercase">{dayData.day.substring(0, 3)}</span>
+                                <span className="text-[10px] font-medium">{dayData.date.split('.')[0]}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* 2. Active Day Content Card */}
+                {activeDayData && (
+                    <div className="p-2 space-y-3 pb-8">
+                        <div className="border border-gray-300 rounded-lg bg-white shadow-sm overflow-hidden">
+                            {/* Card Header: Full Date */}
+                            <div className="bg-slate-100 p-3 border-b border-gray-300 flex justify-between items-center">
+                                <div className="font-bold text-gray-900">{activeDayData.day}</div>
+                                <div className="text-sm font-medium text-gray-600 bg-white px-2 py-0.5 rounded border border-gray-200">
+                                    {activeDayData.date}
+                                </div>
                             </div>
 
-                            {dayData.services.map((service, serviceIndex) => (
-                                <div key={`mobile-${dayData.date}-${service.type}-${serviceIndex}`} className={cn("border-b border-gray-300 last:border-b-0", service.type.includes("Stage") ? "bg-white" : "bg-slate-50/50")}>
-                                    <div className="p-2 font-semibold text-sm text-gray-700 border-b border-gray-200">
+                            {/* Services List for the Active Day */}
+                            {activeDayData.services.map((service, serviceIndex) => (
+                                <div
+                                    key={`mobile-${activeDayData.date}-${service.type}-${serviceIndex}`}
+                                    className={cn(
+                                        "border-b border-gray-300 last:border-b-0",
+                                        service.type.includes("Stage") ? "bg-white" : "bg-slate-50/50"
+                                    )}
+                                >
+                                    {/* Service Header (e.g. Stage Service) */}
+                                    <div className="p-2 font-bold text-sm text-blue-800 border-b border-gray-200 bg-blue-50/30">
                                         {service.type === "Stage Seva" || service.type === "स्टेज सेवा" ? t.services.stage_seva :
                                             service.type === "Sanchalan" || service.type === "संचालन" ? t.services.sanchalan : service.type}
                                     </div>
 
-                                    <div className="grid grid-cols-1 gap-1 p-2">
+                                    {/* Zone List */}
+                                    <div className="grid grid-cols-1 gap-0">
                                         {zones.map((zone, zoneIndex) => {
                                             const currentValue = service.allocations[zone.id];
                                             return (
-                                                <div key={`mobile-${zone.id}`} className="flex items-center gap-2 border-b border-gray-100 pb-1 last:border-b-0">
-                                                    <div className="flex-shrink-0 w-24">
-                                                        <input
-                                                            type="text"
-                                                            value={zone.name}
-                                                            onChange={(e) => onZoneUpdate(zoneIndex, "name", e.target.value)}
-                                                            className="w-full text-xs font-semibold text-gray-900 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none mb-0.5 transition-colors"
-                                                        />
-                                                        <input
-                                                            type="text"
-                                                            value={zone.contact}
-                                                            onChange={(e) => onZoneUpdate(zoneIndex, "contact", e.target.value)}
-                                                            className="w-full text-[10px] text-gray-600 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none mb-0.5 transition-colors"
-                                                        />
+                                                <div key={`mobile-${zone.id}`} className="flex flex-col border-b border-gray-100 last:border-b-0 p-2">
+
+                                                    {/* Zone Header (Name & Time) */}
+                                                    <div className="flex justify-between items-start mb-1.5">
+                                                        <div className="flex-1">
+                                                            <input
+                                                                type="text"
+                                                                value={zone.name}
+                                                                onChange={(e) => onZoneUpdate(zoneIndex, "name", e.target.value)}
+                                                                className="w-full text-sm font-bold text-gray-800 bg-transparent border-none p-0 focus:ring-0"
+                                                            />
+                                                            <input
+                                                                type="text"
+                                                                value={zone.contact}
+                                                                onChange={(e) => onZoneUpdate(zoneIndex, "contact", e.target.value)}
+                                                                className="w-full text-[10px] text-gray-500 bg-transparent border-none p-0 focus:ring-0"
+                                                            />
+                                                        </div>
                                                         <input
                                                             type="text"
                                                             value={zone.time}
                                                             onChange={(e) => onZoneUpdate(zoneIndex, "time", e.target.value)}
-                                                            className="w-full text-[10px] text-gray-500 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none transition-colors"
+                                                            className="text-[10px] font-medium text-gray-500 bg-gray-100 rounded px-1.5 py-0.5 text-right w-16 border-none"
                                                         />
                                                     </div>
-                                                    <div className="flex-1">
+
+                                                    {/* Input Field */}
+                                                    <div className="relative">
                                                         <input
-                                                            list={`volunteers-mobile-${dayIndex}-${serviceIndex}-${zone.id}`}
-                                                            className="w-full px-2 py-1 text-sm text-center bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none rounded-sm font-medium text-gray-800 transition-colors"
+                                                            list={`volunteers-mobile-${activeMobileDayIndex}-${serviceIndex}-${zone.id}`}
+                                                            className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none font-medium text-gray-900"
+                                                            placeholder="Select volunteer..."
                                                             value={currentValue || ""}
-                                                            onChange={(e) => onCellChange(dayIndex, serviceIndex, zone.id, e.target.value)}
+                                                            onChange={(e) => onCellChange(activeMobileDayIndex, serviceIndex, zone.id, e.target.value)}
                                                         />
-                                                        <datalist id={`volunteers-mobile-${dayIndex}-${serviceIndex}-${zone.id}`}>
+                                                        <datalist id={`volunteers-mobile-${activeMobileDayIndex}-${serviceIndex}-${zone.id}`}>
                                                             {gyanPracharaks.map((v) => (
                                                                 <option key={`gp-mobile-${v}`} value={v}>★ {v}</option>
                                                             ))}
@@ -94,11 +144,13 @@ export function ScheduleGrid({
                                 </div>
                             ))}
                         </div>
-                    ))}
-                </div>
+                    </div>
+                )}
             </div>
 
-            {/* Desktop Table Layout */}
+            {/* ========================================================= */}
+            {/* DESKTOP & PRINT LAYOUT (Table View)                       */}
+            {/* ========================================================= */}
             <div className="hidden md:block w-full overflow-x-auto border border-gray-300 rounded-lg shadow-sm bg-white relative print:block print:border-none print:shadow-none print:overflow-visible" id="schedule-grid">
                 <table className="w-full border-collapse table-auto print:min-w-0 print:w-full print:table-fixed print:h-full">
                     <thead className="bg-slate-50 sticky top-0 z-20 shadow-sm print:static print:bg-white print:shadow-none">
