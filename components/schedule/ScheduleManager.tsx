@@ -7,7 +7,7 @@ import { Footer } from "./Footer";
 import { zones as initialZones, getScheduleForWeek } from "@/lib/data";
 import { DaySchedule, Service, Zone } from "@/lib/types";
 import { getWeekStartDate, generateWeekId } from "@/lib/date-utils";
-import { addWeeks, subWeeks, addDays, format, getMonth, getYear } from "date-fns";
+import { addWeeks, subWeeks, addDays, format, getMonth, getYear, parse } from "date-fns";
 import { enIN } from "date-fns/locale";
 import { Language, languages, translations, volunteerTranslations, ZoneId, VolunteerRole } from "@/lib/translations";
 
@@ -72,8 +72,7 @@ export function ScheduleManager() {
     
   }, [currentLang, getFormattedHeaderDate]);
 
-  // Update Header Title when week changes (if not manually edited? No, simpler to just update it)
-  // We want to update the date part when week changes, preserving the language structure
+  // Update Header Title when week changes
   useEffect(() => {
       setHeaderTitle(getFormattedHeaderDate());
   }, [currentWeekStart, getFormattedHeaderDate]);
@@ -212,46 +211,33 @@ export function ScheduleManager() {
     // 1. Check ALL weeks stored in scheduleStore
     for (const weekId in scheduleStore) {
       const weekData = scheduleStore[weekId];
-      // Skip if it's the exact same week we are editing currently (we'll check currentScheduleData instead)
+      // Skip if it's the exact same week we are editing currently
       if (weekId === generateWeekId(currentWeekStart)) continue;
 
       for (const day of weekData) {
-        // Parse date "dd.MM.yy" back to Date object
-        // Assuming format is dd.MM.yy from getFormattedDate
-        const parts = day.date.split('.');
-        if (parts.length === 3) {
-          const dayDate = new Date(2000 + parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-          
-          if (getMonth(dayDate) === targetMonth && getYear(dayDate) === targetYear) {
-             for (const service of day.services) {
-               if (service.allocations[zoneId] === volunteerName) {
-                 return { found: true, date: day.date };
-               }
+        // Robust date parsing
+        const dayDate = parse(day.date, 'dd.MM.yy', new Date());
+        
+        if (getMonth(dayDate) === targetMonth && getYear(dayDate) === targetYear) {
+           for (const service of day.services) {
+             if (service.allocations[zoneId] === volunteerName) {
+               return { found: true, date: day.date };
              }
-          }
+           }
         }
       }
     }
 
-    // 2. Check the current schedule being edited (excluding the specific day/service if needed, but simple check is enough)
-    // Actually, for "more than once", if they are already in the current schedule in another day of same month, it counts.
+    // 2. Check the current schedule being edited
     for (const day of currentScheduleData) {
-       const parts = day.date.split('.');
-       if (parts.length === 3) {
-         const dayDate = new Date(2000 + parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-         // We only care if it's the same month
-         if (getMonth(dayDate) === targetMonth && getYear(dayDate) === targetYear) {
-            // Don't check against the EXACT same date/slot we are trying to fill (handled by caller logic if needed, but generally if they are in another slot)
-            // But here we are just checking "is in zone".
-            for (const service of day.services) {
-               if (service.allocations[zoneId] === volunteerName) {
-                  // If we are replacing, this might flag itself if we don't exclude current cell.
-                  // However, for manual entry, we are about to set it. So it shouldn't be there yet unless they are in another slot.
-                  // For randomization, we clear/overwrite, so we check against *other* filled slots.
-                  return { found: true, date: day.date };
-               }
-            }
-         }
+       const dayDate = parse(day.date, 'dd.MM.yy', new Date());
+
+       if (getMonth(dayDate) === targetMonth && getYear(dayDate) === targetYear) {
+          for (const service of day.services) {
+             if (service.allocations[zoneId] === volunteerName) {
+                return { found: true, date: day.date };
+             }
+          }
        }
     }
 
@@ -262,26 +248,11 @@ export function ScheduleManager() {
     (dayIndex: number, serviceIndex: number, zoneId: string, value: string) => {
       // Logic to parse date of this cell
       const currentDay = scheduleData[dayIndex];
-      const parts = currentDay.date.split('.');
-      const cellDate = new Date(2000 + parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+      const cellDate = parse(currentDay.date, 'dd.MM.yy', new Date());
 
       // Check constraint if adding a name (not clearing)
       if (value && value.trim() !== "") {
-        // We need to pass scheduleData but exclude the current cell's value (which is old value)
-        // Actually isVolunteerInZoneThisMonth checks current state.
-        // If the volunteer is ALREADY in this zone on another day, we block.
         const result = isVolunteerInZoneThisMonth(value, zoneId, cellDate, scheduleData);
-        
-        // If found, and it's not the exact same cell (which we can't easily distinguish here without more ID logic, 
-        // but generally if they are in the zone, they are in the zone). 
-        // Note: If they are already in this zone on THIS day, it returns true. 
-        // But we are changing THIS cell. If the OLD value was them, it doesn't matter. 
-        // If they are in *another* cell in this zone, we block.
-        
-        // Refined check: We found them in the zone. Is it the *same* slot we are editing?
-        // Our check iterates data. If found in `scheduleData`, it might be this slot if we hadn't updated it yet? 
-        // No, `scheduleData` has the OLD value. `value` is the NEW value.
-        // If `value` (new person) is found in `scheduleData` (existing assignments), then they are already working elsewhere in this zone.
         
         if (result.found) {
            const confirmAssign = confirm(
@@ -334,8 +305,7 @@ export function ScheduleManager() {
       let stagePool = [...gyanPracharaks, ...stageVolunteers];
       
       newData.forEach((day: DaySchedule) => {
-        const parts = day.date.split('.');
-        const dayDate = new Date(2000 + parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+        const dayDate = parse(day.date, 'dd.MM.yy', new Date());
 
         day.services.forEach((service: Service) => {
           const isStage = service.type.toLowerCase().includes('stage') || service.type.includes('मंच');
@@ -350,25 +320,15 @@ export function ScheduleManager() {
                 // 1. Try to find someone not in this zone this month
                 for (let i = 0; i < currentPool.length; i++) {
                    const person = currentPool[i];
-                   // Check against stored data AND current newData being built
                    const check = isVolunteerInZoneThisMonth(person, zone.id, dayDate, newData);
                    if (!check.found) {
                       candidate = person;
-                      // Remove from pool for this specific slot to avoid double booking in same slot (though logic below used mod)
-                      // Ideally we remove them from pool for this *service* row? 
-                      // The original logic just used mod, implying reuse across zones is okay? 
-                      // "No volunteer placed in the same zone more than once". 
-                      // It doesn't say "only one service per day".
-                      // But typically 1 person = 1 place at a time. 
-                      // Let's assume we consume the candidate.
                       currentPool.splice(i, 1);
                       break;
                    }
                 }
 
-                // 2. If no clean candidate, fallback to just picking from remaining or original pool?
-                // If strict, we leave empty? Or just pick one?
-                // Let's pick from remaining to ensure coverage, even if it violates (soft constraint for auto)
+                // 2. If no clean candidate, pick from remaining to ensure coverage
                 if (!candidate && currentPool.length > 0) {
                    candidate = currentPool.shift(); 
                 }
@@ -392,8 +352,7 @@ export function ScheduleManager() {
       let sanchalanPool = [...sanchalanVolunteers];
       
       newData.forEach((day: DaySchedule) => {
-        const parts = day.date.split('.');
-        const dayDate = new Date(2000 + parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+        const dayDate = parse(day.date, 'dd.MM.yy', new Date());
 
         day.services.forEach((service: Service) => {
           const isStage = service.type.toLowerCase().includes('stage') || service.type.includes('मंच');
@@ -462,112 +421,6 @@ export function ScheduleManager() {
     window.print();
   }, []);
 
-  const handleExportWord = useCallback(() => {
-    // Get the desktop table (not mobile card layout)
-    const desktopGrid = document.getElementById('schedule-grid');
-    const printableDashboard = document.getElementById('printable-dashboard');
-    if (!printableDashboard || !desktopGrid) return;
-    
-    const header = printableDashboard.querySelector('header');
-    const footer = document.getElementById('schedule-footer');
-
-    // Clone elements
-    const headerClone = header ? (header.cloneNode(true) as HTMLElement) : null;
-    const gridClone = desktopGrid.cloneNode(true) as HTMLElement;
-    const footerClone = footer ? (footer.cloneNode(true) as HTMLElement) : null;
-
-    // Helper to replace inputs with their values
-    const replaceInputs = (el: HTMLElement) => {
-      const inputs = el.querySelectorAll('input');
-      inputs.forEach(input => {
-        const span = document.createElement('span');
-        span.textContent = input.value || '';
-        const computedStyle = getComputedStyle(input);
-        span.style.fontWeight = computedStyle.fontWeight;
-        span.style.fontSize = computedStyle.fontSize;
-        span.style.fontStyle = computedStyle.fontStyle;
-        span.style.textAlign = computedStyle.textAlign;
-        span.className = input.className.replace(/print:hidden/g, '').replace(/hidden/g, '');
-        input.parentNode?.replaceChild(span, input);
-      });
-    };
-
-    // Replace inputs in all cloned elements
-    if (headerClone) replaceInputs(headerClone);
-    replaceInputs(gridClone);
-    if (footerClone) replaceInputs(footerClone);
-
-    // Remove mobile-specific elements and show print elements
-    const processElement = (el: HTMLElement) => {
-      // Remove mobile layout
-      const mobileElements = el.querySelectorAll('[id*="mobile"], [class*="md:hidden"]');
-      mobileElements.forEach(elem => elem.remove());
-      
-      // Show print elements
-      const printHidden = el.querySelectorAll('.print\\:hidden, [class*="print:hidden"]');
-      printHidden.forEach(elem => elem.remove());
-      
-      // Make print:block/flex visible
-      const printBlock = el.querySelectorAll('.print\\:block, [class*="print:block"]');
-      printBlock.forEach(elem => {
-        elem.classList.remove('hidden', 'print:hidden');
-        elem.classList.add('block');
-      });
-      
-      const printFlex = el.querySelectorAll('.print\\:flex, [class*="print:flex"]');
-      printFlex.forEach(elem => {
-        elem.classList.remove('hidden', 'print:hidden');
-        elem.classList.add('flex');
-      });
-    };
-
-    if (headerClone) processElement(headerClone);
-    processElement(gridClone);
-    if (footerClone) processElement(footerClone);
-    
-    const htmlContent = `
-      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-      <head>
-        <meta charset='utf-8'>
-        <title>Volunteer Schedule - ${format(currentWeekStart, "yyyy-MM-dd")}</title>
-        <meta name="author" content="Ashrit Virmani">
-        <style>
-          body { font-family: 'Arial', sans-serif; margin: 20px; }
-          table { border-collapse: collapse; width: 100%; table-layout: fixed; }
-          td, th { border: 1px solid black !important; padding: 4px; text-align: center; vertical-align: middle; word-wrap: break-word; }
-          .print\\:hidden, [class*="print:hidden"] { display: none !important; }
-          .print\\:block, [class*="print:block"] { display: block !important; }
-          .print\\:flex, [class*="print:flex"] { display: flex !important; }
-          .hidden { display: none; }
-          .hidden.print\\:block, .hidden[class*="print:block"] { display: block !important; }
-          .hidden.print\\:flex, .hidden[class*="print:flex"] { display: flex !important; }
-          h1, h2 { text-align: center; }
-          input { display: none !important; }
-          span { display: inline; }
-        </style>
-      </head>
-      <body>
-        ${headerClone ? headerClone.outerHTML : ''}
-        ${gridClone.outerHTML}
-        ${footerClone ? footerClone.outerHTML : ''}
-      </body>
-      </html>
-    `;
-
-    const blob = new Blob(['\ufeff', htmlContent], {
-      type: 'application/msword'
-    });
-    
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Schedule-${format(currentWeekStart, "yyyy-MM-dd")}.doc`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }, [currentWeekStart]);
-
   const t = translations[currentLang];
 
   const displayData = scheduleData.map(day => ({
@@ -594,7 +447,6 @@ export function ScheduleManager() {
         onReset={handleReset}
         onSave={handleSave}
         onExport={handleExport}
-        onExportWord={handleExportWord}
         isDirty={isDirty}
         
         stageVolunteers={displayStage}
