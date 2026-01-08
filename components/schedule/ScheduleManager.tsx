@@ -462,6 +462,76 @@ export function ScheduleManager() {
     window.print();
   }, []);
 
+  const handleExportWord = useCallback(() => {
+    const element = document.getElementById('printable-dashboard');
+    if (!element) return;
+
+    // Clone the element to manipulate it for export
+    const clone = element.cloneNode(true) as HTMLElement;
+
+    // Helper to replace inputs with their values
+    const replaceInputs = (el: HTMLElement) => {
+      const inputs = el.querySelectorAll('input');
+      inputs.forEach(input => {
+        const span = document.createElement('span');
+        span.textContent = input.value;
+        span.style.fontWeight = getComputedStyle(input).fontWeight;
+        input.parentNode?.replaceChild(span, input);
+      });
+    };
+
+    replaceInputs(clone);
+    
+    // Also handle hidden print elements - make them visible if they are hidden
+    // The grid uses 'hidden print:block' for some text elements. 
+    // We need to ensure 'print:block' elements are visible and 'print:hidden' are hidden.
+    // Since we can't easily parse Tailwind classes in JS without a library, 
+    // we'll rely on the fact that we replaced inputs with spans above.
+    // However, for the grid headers, there are separate view/edit modes.
+    // The best way is to apply a style block that mimics the print media query.
+    
+    const htmlContent = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head>
+        <meta charset='utf-8'>
+        <title>Volunteer Schedule</title>
+        <style>
+          body { font-family: 'Arial', sans-serif; }
+          table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+          td, th { border: 1px solid black; padding: 4px; text-align: center; vertical-align: middle; word-wrap: break-word; }
+          .print\\:hidden { display: none !important; }
+          .print\\:block { display: block !important; }
+          .print\\:flex { display: flex !important; }
+          .hidden { display: none; }
+          /* Override hidden for print:block/flex */
+          .hidden.print\\:block { display: block !important; }
+          .hidden.print\\:flex { display: flex !important; }
+          
+          /* Specific overrides for this dashboard */
+          h1, h2 { text-align: center; }
+          input { border: none; background: transparent; }
+        </style>
+      </head>
+      <body>
+        ${clone.innerHTML}
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob(['\ufeff', htmlContent], {
+      type: 'application/msword'
+    });
+    
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Schedule-${format(currentWeekStart, "yyyy-MM-dd")}.doc`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, [currentWeekStart]);
+
   const t = translations[currentLang];
 
   const displayData = scheduleData.map(day => ({
@@ -488,6 +558,7 @@ export function ScheduleManager() {
         onReset={handleReset}
         onSave={handleSave}
         onExport={handleExport}
+        onExportWord={handleExportWord}
         isDirty={isDirty}
         
         stageVolunteers={displayStage}

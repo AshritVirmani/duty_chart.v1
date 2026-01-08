@@ -3,7 +3,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { RefreshCw, Save, RotateCcw, ChevronLeft, ChevronRight, Calendar as CalendarIcon, Download, Globe, Mic2, Activity } from "lucide-react";
+import { RefreshCw, Save, RotateCcw, ChevronLeft, ChevronRight, Calendar as CalendarIcon, Download, Globe, Mic2, Activity, FileText } from "lucide-react";
 import { VolunteerManager } from "./VolunteerManager";
 import { format } from "date-fns";
 import { Language, languages, translations, VolunteerRole } from "@/lib/translations";
@@ -21,6 +21,7 @@ interface ControlPanelProps {
   onReset: () => void;
   onSave: () => void;
   onExport: () => void;
+  onExportWord: () => void;
   isDirty: boolean;
   
   stageVolunteers: string[];
@@ -45,6 +46,7 @@ export function ControlPanel({
   onReset,
   onSave,
   onExport,
+  onExportWord,
   isDirty,
   stageVolunteers,
   sanchalanVolunteers,
@@ -166,6 +168,16 @@ export function ControlPanel({
           </div>
 
           <div className="ml-auto flex items-center gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0">
+            <Button
+              onClick={onExportWord}
+              variant="outline"
+              className="flex items-center gap-2 text-slate-700 border-slate-300 text-xs md:text-sm h-8 md:h-10"
+              title="Export as Editable Word Doc"
+            >
+              <FileText className="h-3 w-3 md:h-4 md:w-4" />
+              {t.export_doc}
+            </Button>
+
             <Button
               onClick={onExport}
               variant="outline"
