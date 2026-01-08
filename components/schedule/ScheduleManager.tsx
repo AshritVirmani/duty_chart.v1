@@ -651,16 +651,16 @@ export function ScheduleManager() {
         onLangChange={setCurrentLang}
       />
 
-      <div id="printable-dashboard" className="flex-1 flex flex-col gap-2 md:gap-4 bg-white p-2 md:p-4 rounded-lg shadow-sm border border-slate-200 overflow-hidden">
-        <header className="text-center mb-1 md:mb-4 flex-shrink-0">
-            <h2 className="text-sm md:text-xl font-semibold text-gray-800 mb-1 md:mb-2 italic print:text-sm">
+      <div id="printable-dashboard" className="flex-1 flex flex-col gap-2 md:gap-4 bg-white p-2 md:p-4 rounded-lg shadow-sm border border-slate-200 overflow-hidden min-h-0">
+        <header className="text-center mb-2 md:mb-4 flex-shrink-0">
+            <h2 className="text-[10px] md:text-xl font-semibold text-gray-800 mb-0.5 md:mb-2 italic print:text-sm leading-tight">
                <input 
                  value={headerQuote} 
                  onChange={(e) => setHeaderQuote(e.target.value)}
                  className="w-full text-center bg-transparent border-none focus:outline-none italic"
                />
             </h2>
-            <h1 className="text-sm md:text-lg font-bold text-gray-900 leading-tight print:text-xl">
+            <h1 className="text-[11px] md:text-lg font-bold text-gray-900 leading-tight print:text-xl">
                <input 
                  value={headerTitle} 
                  onChange={(e) => setHeaderTitle(e.target.value)}
