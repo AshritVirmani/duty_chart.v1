@@ -100,7 +100,7 @@ export function ScheduleGrid({
 
             {/* Desktop Table Layout */}
             <div className="hidden md:block w-full overflow-x-auto border border-gray-300 rounded-lg shadow-sm bg-white relative print:block print:border-none print:shadow-none print:overflow-visible" id="schedule-grid">
-                <table className="w-full border-collapse table-auto print:min-w-0 print:w-full print:table-fixed print:h-full">
+                <table className="w-full border-collapse table-auto print:min-w-0 print:w-full print:table-fixed">
                     <thead className="bg-slate-50 sticky top-0 z-20 shadow-sm print:static print:bg-white print:shadow-none">
                         <tr>
                             <th
