@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
 import { DaySchedule, Zone } from "@/lib/types";
 import { Language, translations } from "@/lib/translations";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface ScheduleGridProps {
   data: DaySchedule[];
@@ -28,154 +27,79 @@ export function ScheduleGrid({
   
   const t = translations[currentLang];
 
-  const [selectedDayIndex, setSelectedDayIndex] = useState(0);
-
   return (
     <>
-      {/* Mobile Card Layout with Date Tabs */}
-      <div className="md:hidden flex-1 flex flex-col overflow-hidden border border-black rounded-lg shadow-lg bg-white print:hidden min-h-0" id="schedule-grid-mobile">
-        <Tabs value={selectedDayIndex.toString()} onValueChange={(val) => setSelectedDayIndex(parseInt(val))} className="flex-1 flex flex-col overflow-hidden min-h-0">
-          <div className="flex-shrink-0 border-b border-black bg-slate-100 p-2">
-            <TabsList className="w-full grid grid-cols-6 gap-1 h-auto p-1 bg-white">
-              {data.map((dayData, index) => (
-                <TabsTrigger 
-                  key={`tab-${dayData.date}-${index}`} 
-                  value={index.toString()}
-                  className="flex flex-col items-center justify-center py-2 px-1 text-[10px] font-semibold"
-                >
-                  <span className="leading-tight">{dayData.day.substring(0, 3)}</span>
-                  <span className="text-[8px] text-gray-600 mt-0.5">{dayData.date.split('.')[0]}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
-          
-          <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 -webkit-overflow-scrolling-touch">
-            {data.map((dayData, dayIndex) => (
-              <TabsContent key={`content-${dayData.date}-${dayIndex}`} value={dayIndex.toString()} className="m-0 p-4 pb-6 space-y-4">
-                <div className="mb-4 pb-3 border-b-2 border-gray-300 sticky top-0 bg-white z-10 -mx-4 px-4">
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">{dayData.day}</h3>
-                  <p className="text-sm text-gray-600">{dayData.date}</p>
-                </div>
-                
-                <div className="space-y-4">
-                  {zones.map((zone, zoneIndex) => {
-                    const stageService = dayData.services.find(s => 
-                      s.type === "Stage Seva" || s.type === "स्टेज सेवा" || s.type.toLowerCase().includes('stage')
-                    );
-                    const sanchalanService = dayData.services.find(s => 
-                      s.type === "Sanchalan" || s.type === "संचालन" || (!s.type.toLowerCase().includes('stage'))
-                    );
-                    
-                    const stageValue = stageService?.allocations[zone.id] || "";
-                    const sanchalanValue = sanchalanService?.allocations[zone.id] || "";
-                    
-                    return (
-                      <div 
-                        key={`mobile-card-${zone.id}`} 
-                        className="bg-white border-2 border-gray-300 rounded-lg shadow-md p-4"
-                      >
-                        <div className="mb-4 pb-3 border-b border-gray-200">
-                          <div className="flex items-center justify-between mb-2">
+      {/* Mobile Card Layout */}
+      <div className="md:hidden flex-1 overflow-auto border border-black rounded-lg shadow-lg bg-white" id="schedule-grid-mobile">
+        <div className="p-2 space-y-3">
+          {data.map((dayData, dayIndex) => (
+            <div key={`mobile-${dayData.date}-${dayIndex}`} className="border border-black rounded-lg bg-white">
+              <div className="bg-slate-100 p-2 border-b border-black">
+                <div className="font-bold text-sm text-gray-900">{dayData.day}</div>
+                <div className="text-xs text-gray-600">{dayData.date}</div>
+              </div>
+              
+              {dayData.services.map((service, serviceIndex) => (
+                <div key={`mobile-${dayData.date}-${service.type}-${serviceIndex}`} className={cn("border-b border-black last:border-b-0", service.type.includes("Stage") ? "bg-white" : "bg-slate-50/50")}>
+                  <div className="p-2 font-semibold text-sm text-gray-700 border-b border-gray-300">
+                    {service.type === "Stage Seva" || service.type === "स्टेज सेवा" ? t.services.stage_seva : 
+                     service.type === "Sanchalan" || service.type === "संचालन" ? t.services.sanchalan : service.type}
+                  </div>
+                  
+                  <div className="grid grid-cols-1 gap-1 p-2">
+                    {zones.map((zone, zoneIndex) => {
+                      const currentValue = service.allocations[zone.id];
+                      return (
+                        <div key={`mobile-${zone.id}`} className="flex items-center gap-2 border-b border-gray-200 pb-1 last:border-b-0">
+                          <div className="flex-shrink-0 w-24">
                             <input
                               type="text"
                               value={zone.name}
                               onChange={(e) => onZoneUpdate(zoneIndex, "name", e.target.value)}
-                              className="text-lg font-bold text-gray-900 bg-transparent border-b border-transparent hover:border-gray-400 focus:border-blue-500 focus:outline-none flex-1 text-base"
+                              className="w-full text-xs font-semibold text-gray-900 bg-transparent border-b border-transparent hover:border-gray-400 focus:border-blue-500 focus:outline-none mb-0.5"
                             />
-                            <span className="text-xs text-gray-500 ml-2 whitespace-nowrap">Zone {zoneIndex + 1}</span>
-                          </div>
-                          <div className="flex items-center gap-4 text-xs text-gray-600 mt-2">
-                            <div className="flex items-center gap-1">
-                              <span className="text-gray-500">📞</span>
-                              <input
-                                type="text"
-                                value={zone.contact}
-                                onChange={(e) => onZoneUpdate(zoneIndex, "contact", e.target.value)}
-                                className="bg-transparent border-b border-transparent hover:border-gray-400 focus:border-blue-500 focus:outline-none min-w-[80px]"
-                              />
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <span className="text-gray-500">🕐</span>
-                              <input
-                                type="text"
-                                value={zone.time}
-                                onChange={(e) => onZoneUpdate(zoneIndex, "time", e.target.value)}
-                                className="bg-transparent border-b border-transparent hover:border-gray-400 focus:border-blue-500 focus:outline-none min-w-[60px]"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-4">
-                          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
-                            <div className="flex items-center gap-2 mb-3">
-                              <span className="text-base font-bold text-blue-700">{t.services.stage_seva}</span>
-                            </div>
                             <input
-                              list={`volunteers-mobile-stage-${dayIndex}-${zone.id}`}
-                              className="w-full px-4 py-3 text-base font-medium text-gray-800 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                              value={stageValue}
-                              onChange={(e) => {
-                                const serviceIndex = dayData.services.findIndex(s => 
-                                  s.type === "Stage Seva" || s.type === "स्टेज सेवा" || s.type.toLowerCase().includes('stage')
-                                );
-                                if (serviceIndex >= 0) {
-                                  onCellChange(dayIndex, serviceIndex, zone.id, e.target.value);
-                                }
-                              }}
-                              placeholder="Select volunteer..."
+                              type="text"
+                              value={zone.contact}
+                              onChange={(e) => onZoneUpdate(zoneIndex, "contact", e.target.value)}
+                              className="w-full text-[10px] text-gray-600 bg-transparent border-b border-transparent hover:border-gray-400 focus:border-blue-500 focus:outline-none mb-0.5"
                             />
-                            <datalist id={`volunteers-mobile-stage-${dayIndex}-${zone.id}`}>
+                            <input
+                              type="text"
+                              value={zone.time}
+                              onChange={(e) => onZoneUpdate(zoneIndex, "time", e.target.value)}
+                              className="w-full text-[10px] text-gray-500 bg-transparent border-b border-transparent hover:border-gray-400 focus:border-blue-500 focus:outline-none"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <input
+                              list={`volunteers-mobile-${dayIndex}-${serviceIndex}-${zone.id}`}
+                              className="w-full px-2 py-1 text-sm text-center bg-transparent border-b border-transparent hover:border-gray-400 focus:border-blue-500 focus:outline-none rounded-sm font-medium text-gray-800"
+                              value={currentValue || ""}
+                              onChange={(e) => onCellChange(dayIndex, serviceIndex, zone.id, e.target.value)}
+                            />
+                            <datalist id={`volunteers-mobile-${dayIndex}-${serviceIndex}-${zone.id}`}>
                               {gyanPracharaks.map((v) => (
-                                <option key={`gp-mobile-stage-${v}`} value={v}>★ {v}</option> 
+                                <option key={`gp-mobile-${v}`} value={v}>★ {v}</option> 
                               ))}
                               {volunteers.map((v) => (
-                                <option key={`v-mobile-stage-${v}`} value={v} />
-                              ))}
-                            </datalist>
-                          </div>
-                          
-                          <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg">
-                            <div className="flex items-center gap-2 mb-3">
-                              <span className="text-base font-bold text-green-700">{t.services.sanchalan}</span>
-                            </div>
-                            <input
-                              list={`volunteers-mobile-sanchalan-${dayIndex}-${zone.id}`}
-                              className="w-full px-4 py-3 text-base font-medium text-gray-800 bg-white border border-gray-300 rounded-md focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200"
-                              value={sanchalanValue}
-                              onChange={(e) => {
-                                const serviceIndex = dayData.services.findIndex(s => 
-                                  s.type === "Sanchalan" || s.type === "संचालन" || (!s.type.toLowerCase().includes('stage'))
-                                );
-                                if (serviceIndex >= 0) {
-                                  onCellChange(dayIndex, serviceIndex, zone.id, e.target.value);
-                                }
-                              }}
-                              placeholder="Select volunteer..."
-                            />
-                            <datalist id={`volunteers-mobile-sanchalan-${dayIndex}-${zone.id}`}>
-                              {gyanPracharaks.map((v) => (
-                                <option key={`gp-mobile-sanchalan-${v}`} value={v}>★ {v}</option> 
-                              ))}
-                              {volunteers.map((v) => (
-                                <option key={`v-mobile-sanchalan-${v}`} value={v} />
+                                <option key={`v-mobile-${v}`} value={v} />
                               ))}
                             </datalist>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </TabsContent>
-            ))}
-          </div>
-        </Tabs>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Desktop Table Layout - Hidden on mobile, visible on desktop and print */}
-      <div className="hidden md:block flex-1 overflow-auto border border-black rounded-lg shadow-lg bg-white relative print:border-none print:shadow-none print:overflow-visible" id="schedule-grid">
+      {/* Desktop Table Layout */}
+      <div className="hidden md:block flex-1 overflow-auto border border-black rounded-lg shadow-lg bg-white relative print:border-none print:shadow-none print:overflow-visible print:block" id="schedule-grid">
         <table className="w-full border-collapse table-auto print:min-w-0 print:w-full print:table-fixed print:h-full">
         <thead className="bg-slate-100 sticky top-0 z-20 shadow-sm print:static print:bg-white print:shadow-none">
           <tr>

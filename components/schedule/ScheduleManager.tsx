@@ -459,45 +459,7 @@ export function ScheduleManager() {
   }, []);
 
   const handleExport = useCallback(() => {
-    // Replace inputs with their values for print (especially important for mobile Safari)
-    const printableDashboard = document.getElementById('printable-dashboard');
-    if (!printableDashboard) {
-      window.print();
-      return;
-    }
-
-    const inputs = printableDashboard.querySelectorAll('input');
-    const replacements: Array<{ input: HTMLInputElement; span: HTMLSpanElement; parent: Node | null }> = [];
-
-    inputs.forEach(input => {
-      const span = document.createElement('span');
-      span.textContent = input.value || '';
-      const computedStyle = getComputedStyle(input);
-      span.style.fontWeight = computedStyle.fontWeight;
-      span.style.fontSize = computedStyle.fontSize;
-      span.style.fontStyle = computedStyle.fontStyle;
-      span.style.textAlign = computedStyle.textAlign;
-      span.style.display = 'inline';
-      span.className = input.className.replace(/print:hidden/g, '').replace(/hidden/g, '');
-      
-      const parent = input.parentNode;
-      if (parent) {
-        parent.replaceChild(span, input);
-        replacements.push({ input, span, parent });
-      }
-    });
-
-    // Trigger print
     window.print();
-
-    // Restore inputs after a short delay (after print dialog closes)
-    setTimeout(() => {
-      replacements.forEach(({ input, span, parent }) => {
-        if (parent && span.parentNode === parent) {
-          parent.replaceChild(input, span);
-        }
-      });
-    }, 500);
   }, []);
 
   const handleExportWord = useCallback(() => {
@@ -651,16 +613,16 @@ export function ScheduleManager() {
         onLangChange={setCurrentLang}
       />
 
-      <div id="printable-dashboard" className="flex-1 flex flex-col gap-2 md:gap-4 bg-white p-2 md:p-4 rounded-lg shadow-sm border border-slate-200 overflow-hidden min-h-0">
-        <header className="text-center mb-2 md:mb-4 flex-shrink-0">
-            <h2 className="text-[10px] md:text-xl font-semibold text-gray-800 mb-0.5 md:mb-2 italic print:text-sm leading-tight">
+      <div id="printable-dashboard" className="flex-1 flex flex-col gap-2 md:gap-4 bg-white p-2 md:p-4 rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+        <header className="text-center mb-1 md:mb-4 flex-shrink-0">
+            <h2 className="text-sm md:text-xl font-semibold text-gray-800 mb-1 md:mb-2 italic print:text-sm">
                <input 
                  value={headerQuote} 
                  onChange={(e) => setHeaderQuote(e.target.value)}
                  className="w-full text-center bg-transparent border-none focus:outline-none italic"
                />
             </h2>
-            <h1 className="text-[11px] md:text-lg font-bold text-gray-900 leading-tight print:text-xl">
+            <h1 className="text-sm md:text-lg font-bold text-gray-900 leading-tight print:text-xl">
                <input 
                  value={headerTitle} 
                  onChange={(e) => setHeaderTitle(e.target.value)}
