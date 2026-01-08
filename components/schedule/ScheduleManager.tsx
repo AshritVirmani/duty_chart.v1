@@ -18,7 +18,7 @@ const getInitialHardcoded = (role: VolunteerRole) =>
     .sort();
 
 export function ScheduleManager() {
-  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(new Date(2026, 0, 12));
+  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(new Date(2025, 2, 31));
   const [scheduleData, setScheduleData] = useState<DaySchedule[]>([]);
   const [isDirty, setIsDirty] = useState(false);
   const [scheduleStore, setScheduleStore] = useState<Record<string, DaySchedule[]>>({});
@@ -48,6 +48,14 @@ export function ScheduleManager() {
     const template = translations[currentLang].header.title;
     return template.replace("{startDate}", startStr).replace("{endDate}", endStr);
   }, [currentWeekStart, currentLang]);
+
+  // Dynamic Document Title for PDF Naming
+  useEffect(() => {
+    const endOfWeek = addDays(currentWeekStart, 5);
+    const startStr = format(currentWeekStart, "dd.MM.yyyy");
+    const endStr = format(endOfWeek, "dd.MM.yyyy");
+    document.title = `Duty Chart ${startStr} - ${endStr}`;
+  }, [currentWeekStart]);
 
   // Initialize and Update Editable Text on Language Change
   useEffect(() => {
@@ -109,8 +117,8 @@ export function ScheduleManager() {
           setScheduleStore(parsedSchedules);
         } else {
           // Initialize with default hardcoded week if no store
-          const initialId = generateWeekId(new Date(2026, 0, 12));
-          const initialData = getScheduleForWeek(new Date(2026, 0, 12));
+          const initialId = generateWeekId(new Date(2025, 2, 31));
+          const initialData = getScheduleForWeek(new Date(2025, 2, 31));
           setScheduleStore({ [initialId]: initialData });
         }
 
@@ -418,21 +426,8 @@ export function ScheduleManager() {
   }, []);
 
   const handleExport = useCallback(() => {
-    const endOfWeek = addDays(currentWeekStart, 5);
-    const startStr = format(currentWeekStart, "dd-MM-yyyy");
-    const endStr = format(endOfWeek, "dd-MM-yyyy");
-
-    // Save original title
-    const originalTitle = document.title;
-
-    // Set temp title for PDF filename
-    document.title = `Duty_Chart_${startStr}_to_${endStr}`;
-
     window.print();
-
-    // Restore title (optional, but good practice)
-    document.title = originalTitle;
-  }, [currentWeekStart]);
+  }, []);
 
   const t = translations[currentLang];
 
@@ -480,8 +475,8 @@ export function ScheduleManager() {
         />
       </div>
 
-      <div id="printable-dashboard" className="flex flex-col gap-2 md:gap-4 bg-white p-2 md:p-4 rounded-lg shadow-sm border border-slate-200 print:shadow-none print:border-none print:p-0 print:gap-1 print:m-0 print:[zoom:0.7] print:w-auto print:min-w-0">
-        <header className="text-center mb-1 md:mb-4 flex-shrink-0 print:mb-1">
+      <div id="printable-dashboard" className="flex flex-col gap-2 md:gap-4 bg-white p-2 md:p-4 rounded-lg shadow-sm border border-slate-200 print:shadow-none print:border-none print:p-2 print:gap-0 print:m-0 print:min-w-[1024px]">
+        <header className="text-center mb-1 md:mb-4 flex-shrink-0 print:mb-0">
           <h2 className="text-sm md:text-xl font-semibold text-gray-800 mb-1 md:mb-2 italic print:text-sm print:mb-0">
             <input
               value={headerQuote}

@@ -100,27 +100,27 @@ export function ScheduleGrid({
 
             {/* Desktop Table Layout */}
             <div className="hidden md:block w-full overflow-x-auto border border-gray-300 rounded-lg shadow-sm bg-white relative print:block print:border-none print:shadow-none print:overflow-visible" id="schedule-grid">
-                <table className="w-full border-collapse table-auto print:min-w-0 print:w-full print:table-fixed">
+                <table className="w-full border-collapse table-auto print:min-w-0 print:w-full print:table-fixed print:h-full">
                     <thead className="bg-slate-50 sticky top-0 z-20 shadow-sm print:static print:bg-white print:shadow-none">
                         <tr>
                             <th
                                 rowSpan={3}
-                                className="border border-gray-300 p-2 text-center min-w-[90px] sticky left-0 z-30 bg-slate-50 font-bold text-gray-700 text-base align-middle print:static print:bg-white print:min-w-0 print:w-[8%] print:border-black print:p-0.5 print:text-xs"
+                                className="border border-gray-300 p-2 text-center min-w-[90px] sticky left-0 z-30 bg-slate-50 font-bold text-gray-700 text-base align-middle print:static print:bg-white print:min-w-0 print:w-[8%] print:border-black print:p-1 print:text-sm"
                             >
-                                <div className="flex flex-col gap-0.5">
-                                    <span className="whitespace-pre-line leading-tight">{t.grid.day_date}</span>
+                                <div className="flex flex-col gap-1">
+                                    <span className="whitespace-pre-line">{t.grid.day_date}</span>
                                 </div>
                             </th>
                             <th
                                 rowSpan={3}
-                                className="border border-gray-300 p-2 text-center min-w-[90px] sticky left-[90px] z-30 bg-slate-50 font-bold text-gray-700 text-lg align-middle print:static print:bg-white print:min-w-0 print:w-[8%] print:border-black print:p-0.5 print:text-xs"
+                                className="border border-gray-300 p-2 text-center min-w-[90px] sticky left-[90px] z-30 bg-slate-50 font-bold text-gray-700 text-lg align-middle print:static print:bg-white print:min-w-0 print:w-[8%] print:border-black print:p-1 print:text-sm"
                             >
                                 {t.grid.service}
                             </th>
                             {zones.map((zone, index) => (
                                 <th
                                     key={`num-${zone.id}`}
-                                    className="border border-gray-300 p-1 text-center font-bold text-gray-800 text-base print:text-xs print:border-black print:p-0.5"
+                                    className="border border-gray-300 p-1 text-center font-bold text-gray-800 text-base print:text-sm print:border-black print:p-1"
                                 >
                                     {index + 1}
                                 </th>
@@ -131,7 +131,7 @@ export function ScheduleGrid({
                             {zones.map((zone, index) => (
                                 <th
                                     key={`name-${zone.id}`}
-                                    className="border border-gray-300 p-1.5 text-center font-semibold text-gray-700 align-top group relative print:min-w-0 print:align-middle print:border-black print:p-0.5"
+                                    className="border border-gray-300 p-1.5 text-center font-semibold text-gray-700 align-top group relative print:min-w-0 print:align-middle print:border-black print:p-1"
                                 >
                                     <div className="print:hidden">
                                         <input
@@ -148,9 +148,9 @@ export function ScheduleGrid({
                                         />
                                     </div>
 
-                                    <div className="hidden print:flex print:flex-col print:items-center print:justify-center print:gap-0">
-                                        <span className="text-base font-bold text-gray-900 whitespace-normal break-words leading-none print:text-xs">{zone.name}</span>
-                                        <span className="text-sm text-gray-600 whitespace-normal break-words leading-none print:text-[10px]">{zone.contact}</span>
+                                    <div className="hidden print:flex print:flex-col print:items-center print:justify-center print:gap-1">
+                                        <span className="text-base font-bold text-gray-900 whitespace-normal break-words leading-tight print:text-sm">{zone.name}</span>
+                                        <span className="text-sm text-gray-600 whitespace-normal break-words leading-tight print:text-xs">{zone.contact}</span>
                                     </div>
                                 </th>
                             ))}
@@ -160,7 +160,7 @@ export function ScheduleGrid({
                             {zones.map((zone, index) => (
                                 <th
                                     key={`time-${zone.id}`}
-                                    className="border border-gray-300 p-1.5 text-center text-sm font-medium text-gray-800 print:text-[10px] print:border-black print:p-0"
+                                    className="border border-gray-300 p-1.5 text-center text-sm font-medium text-gray-800 print:text-xs print:border-black print:p-0.5"
                                 >
                                     <input
                                         type="text"
@@ -168,7 +168,7 @@ export function ScheduleGrid({
                                         onChange={(e) => onZoneUpdate(index, "time", e.target.value)}
                                         className="w-full text-center bg-transparent font-medium border-b border-transparent hover:border-gray-400 focus:border-blue-500 focus:outline-none print:hidden text-sm transition-colors"
                                     />
-                                    <span className="hidden print:block text-[10px] font-medium whitespace-nowrap leading-none py-0.5">{zone.time}</span>
+                                    <span className="hidden print:block text-xs font-medium whitespace-nowrap">{zone.time}</span>
                                 </th>
                             ))}
                         </tr>
@@ -187,17 +187,17 @@ export function ScheduleGrid({
                                         {serviceIndex === 0 && (
                                             <td
                                                 rowSpan={dayData.services.length}
-                                                className="border border-gray-300 p-3 font-bold text-gray-700 align-middle sticky left-0 z-10 bg-white text-center print:static print:p-0.5 print:border-black"
+                                                className="border border-gray-300 p-3 font-bold text-gray-700 align-middle sticky left-0 z-10 bg-white text-center print:static print:p-2 print:border-black"
                                             >
-                                                <div className="flex flex-col gap-0.5">
-                                                    <span className="text-base text-gray-900 print:text-xs">{dayData.day}</span>
-                                                    <span className="text-sm text-gray-500 font-medium print:text-[10px] whitespace-nowrap">{dayData.date}</span>
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-base text-gray-900 print:text-sm">{dayData.day}</span>
+                                                    <span className="text-sm text-gray-500 font-medium print:text-xs whitespace-nowrap">{dayData.date}</span>
                                                 </div>
                                             </td>
                                         )}
 
-                                        <td className="border border-gray-300 p-3 font-semibold text-gray-700 align-middle sticky left-[90px] z-10 bg-inherit text-center text-base print:static print:text-xs print:p-0.5 print:border-black print:whitespace-nowrap">
-                                            <span>
+                                        <td className="border border-gray-300 p-3 font-semibold text-gray-700 align-middle sticky left-[90px] z-10 bg-inherit text-center text-base print:static print:text-sm print:p-2 print:border-black">
+                                            <span className="print:whitespace-normal print:break-words">
                                                 {service.type === "Stage Seva" || service.type === "स्टेज सेवा" ? t.services.stage_seva :
                                                     service.type === "Sanchalan" || service.type === "संचालन" ? t.services.sanchalan : service.type}
                                             </span>
@@ -209,7 +209,7 @@ export function ScheduleGrid({
                                             return (
                                                 <td
                                                     key={zone.id}
-                                                    className="border border-gray-300 p-1 text-center align-middle print:border-black print:p-[1px]"
+                                                    className="border border-gray-300 p-1 text-center align-middle print:border-black print:p-1"
                                                 >
                                                     <div className="relative w-full h-full flex items-center justify-center">
                                                         <input
@@ -219,7 +219,7 @@ export function ScheduleGrid({
                                                             onChange={(e) => onCellChange(dayIndex, serviceIndex, zone.id, e.target.value)}
                                                         />
 
-                                                        <span className="hidden print:flex items-center justify-center w-full h-auto text-base font-medium text-gray-900 whitespace-normal break-words leading-none px-0.5 py-[2px] min-h-[1.25em] print:text-xs">
+                                                        <span className="hidden print:flex items-center justify-center w-full h-full text-base font-medium text-gray-900 whitespace-normal break-words leading-tight px-1 min-h-[1.5em] print:text-sm">
                                                             {currentValue}
                                                         </span>
 
